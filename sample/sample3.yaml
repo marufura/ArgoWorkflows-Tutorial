@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample3
+spec:
+  entrypoint: main
+  templates: 
+  - name: main
+    steps:
+      - - name: step1
+          inline: 
+            container:
+              image: docker/whalesay:latest
+              command: [cowsay]
+              args: ["inline"]

@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample16
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 60
+    secondsAfterSuccess: 60
+    secondsAfterFailure: 60
+  serviceAccountName: workflow-sa
+  entrypoint: main
+  templates: 
+  - name: main
+    steps:
+      - - name: random-output
+          template: random-output
+          continueOn:
+            failed: true
+      - - name: choice-zero
+          when: "{{steps.random-output.outputs.result}} == zero"
+          template: whalesay
+          arguments:
+            parameters:
+              - name: message
+                value: "argo choose zero!"
+        - name: choice-one
+          when: "{{steps.random-output.outputs.result}} == one"
+          template: whalesay
+          arguments:
+            parameters:
+              - name: message
+                value: "argo choose one!"
+  - name: random-output
+    script:
+      image: python:alpine3.6
+      command: ["python"]
+      source: |
+        import random
+        print(random.choice(["zero", "one"]))
+  - name: whalesay
+    inputs:
+      parameters:
+        - name: message
+          value: default
+    container:
+      image: docker/whalesay:latest
+      command: [cowsay]
+      args: ["{{inputs.parameters.message}}"]

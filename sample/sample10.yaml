@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample10
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 60
+    secondsAfterSuccess: 60
+    secondsAfterFailure: 10
+  entrypoint: main
+  templates: 
+  - name: main
+    steps:
+      - - name: step1
+          template: sh-script
+  - name: sh-script
+    script:
+      image: alpine:latest
+      command: [sh]
+      source: |
+        apk -q update && apk -q upgrade
+        apk -q add figlet
+        echo sample10 | figlet

@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample13
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 60
+    secondsAfterSuccess: 60
+    secondsAfterFailure: 60
+  entrypoint: main
+  templates: 
+  - name: main
+    steps:
+      - - name: fail-with-retry
+          template: fail-with-retry
+      - - name: step-after-success
+          template: whalesay
+          arguments:
+            parameters:
+              - name: message
+                value: "Success!"
+  - name: fail-with-retry
+    retryStrategy:
+      limit: "5"
+      backoff:
+        duration: "10s"
+        factor: "2"
+        maxDuration: "1m"
+    script:
+      image: python:alpine3.6
+      command: ["python"]
+      source: |
+        import random
+        import sys
+        exit_code = random.choice([0, 1, 1])
+        sys.exit(exit_code)
+  - name: whalesay
+    inputs:
+      parameters:
+        - name: message
+          value: default
+    container:
+      image: docker/whalesay:latest
+      command: [cowsay]
+      args: ["{{inputs.parameters.message}}"]

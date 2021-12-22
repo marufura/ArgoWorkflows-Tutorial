@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample5
+spec:
+  entrypoint: main
+  templates: 
+  - name: main
+    dag:
+      tasks:
+        - name: step1
+          template: argosay
+        - name: step2-1
+          depends: "step1"
+          template: argosay
+        - name: step2-2
+          depends: "step1"
+          template: argosay
+        - name: step3
+          depends: "step2-1 && step2-2"
+          template: argosay
+  - name: argosay
+    container:
+      image: argoproj/argosay:v2

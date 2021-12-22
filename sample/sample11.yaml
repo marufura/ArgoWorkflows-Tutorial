@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample11
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 60
+    secondsAfterSuccess: 60
+    secondsAfterFailure: 10
+  entrypoint: main
+  templates: 
+  - name: main
+    steps:
+      - - name: k8s-create-cm
+          template: k8s-create-cm
+      - - name: k8s-get-cm
+          template: k8s-get-cm
+  - name: k8s-create-cm
+    serviceAccontName: workflow-sa
+    resource:
+      action: create
+      manifest: |
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: test-cm
+        data:
+          key: value
+  - name: k8s-get-cm
+    serviceAccountName: workflow-sa
+    container:
+      image: argoproj/argoexec:latest
+      command: [sh -c]
+      args: ["kubectl get cm test-cm"]

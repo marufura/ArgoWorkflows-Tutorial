@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample14
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 60
+    secondsAfterSuccess: 60
+    secondsAfterFailure: 60
+  entrypoint: main
+  templates: 
+  - name: main
+    steps:
+      - - name: continue-on-fail
+          template: always-fail
+          continueOn:
+            failed: true
+      - - name: after-fail
+          template: whalesay
+          arguments:
+            parameters:
+              - name: message
+                value: "failed!"
+  - name: always-fail
+    script:
+      image: python:alpine3.6
+      command: ["python"]
+      source: |
+        import sys
+        sys.exit(1)
+  - name: whalesay
+    inputs:
+      parameters:
+        - name: message
+          value: default
+    container:
+      image: docker/whalesay:latest
+      command: [cowsay]
+      args: ["{{inputs.parameters.message}}"]
