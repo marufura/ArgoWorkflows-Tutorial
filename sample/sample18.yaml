@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample18
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 60
+    secondsAfterSuccess: 60
+    secondsAfterFailure: 60
+  entrypoint: main
+  onExit: exit-handler
+  templates: 
+  - name: main
+    steps:
+      - - name: step1
+          template: whalesay
+  - name: whalesay
+    container:
+      image: docker/whalesay:latest
+      command: [cowsay]
+      args: ["step1"]
+  - name: exit-handler
+    steps:
+      - - name: webhook
+          when: "{{workflow.status}} == Succeeded"
+          template: echo-bye
+  - name: echo-bye
+    script:
+      image: alpine:latest
+      command: [sh]
+      source: |
+        echo "bye"

@@ -1,0 +1,29 @@
+# Visit https://github.com/marufura/t2v 
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample21
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 60
+    secondsAfterSuccess: 60
+    secondsAfterFailure: 60
+  entrypoint: main
+  templates: 
+  - name: main
+    steps:
+      - - name: git-clone
+          template: git-clone
+  - name: git-clone
+    inputs:
+      artifacts: 
+      - name: argo-source
+        path: /src
+        git:
+          repo: https://github.com/marufura/t2v.git
+          revision: "main"
+    container:
+      image: alpine:latest
+      command: [sh, -c]
+      args: ["ls -l /src"]

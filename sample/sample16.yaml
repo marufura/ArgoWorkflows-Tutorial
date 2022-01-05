@@ -3,11 +3,11 @@ kind: Workflow
 metadata:
   Name: sample16
 spec:
+  serviceAccountName: test-sa
   ttlStrategy:
     secondsAfterCompletion: 60
     secondsAfterSuccess: 60
     secondsAfterFailure: 60
-  serviceAccountName: workflow-sa
   entrypoint: main
   templates: 
   - name: main

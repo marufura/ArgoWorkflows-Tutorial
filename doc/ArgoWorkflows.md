@@ -12,7 +12,7 @@ TODO: やり方がまだよくわかっていない、要調査
 ## Workflowの書き方
 [CloudNative Days Tokyo 2021: Argo Workflows](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=41)
 
-### sample1
+## sample1
 ![](img/sample1.png)
 
 - Arog Workflows では一つ一つの処理を**template**という概念で管理する
@@ -21,37 +21,37 @@ TODO: やり方がまだよくわかっていない、要調査
 - 実際の処理の詳細は「**name: whalesay**」に記述
     - 今回はstepsの内部から参照する方法(inlineは後述)
 
-### sample2
+## sample2
 ![](img/sample2.png)
 
 - sample1からmainのstepsにstep2を追加
     - stepsの中身は基本的に上から書いた順に実行されていく
     - [実行](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=46)すると...?
 
-### sample3
+## sample3
 ![](img/sample3.png)
 
 - step内の処理をtemplate内に別に書きたくなければinlineでワークフローを書くこともできる。
 - 直感的だがstepが多いと可読性が下がるかも
 - stepsを記述する際には「- -」と配列をネストさせる必要があることに注意
     - 以下のエラーが出た場合は要注意
-        - Failed to parse workfloe: json: cannot unmarshal object into Go struct field Template.spec.templates.steps of type []map[string]interface{}
+        - `Failed to parse workfloe: json: cannot unmarshal object into Go struct field Template.spec.templates.steps of type []map[string]interface{}`
 
 
-### sample4
+## sample4
 ![](img/sample4.png)
 
 - 先ほどstepsでネストしていた(mapの配列が必要だった)理由は、stepで並列に動かしたい処理があった場合に対応するため
 - 上の例だと2-1,2-2は並列で動く
 
-### sample5
+## sample5
 ![](img/sample5.png)
 
 - 「- -」が紛らわしくてstepsを書くのが嫌いならdagを使う方法もある
 - dependsを使って順番を制御する必要がある
     - dependsを忘れると全てのstepが並列実行される
 
-### sample6
+## sample6
 ![](img/sample6.png)
 
 - 同じような処理をparameterを変えて処理させたい場合
@@ -70,7 +70,7 @@ TODO: やり方がまだよくわかっていない、要調査
 
 ---
 
-### sample7
+## sample7
 ![](img/sample7.png)
 
 - inputs.parametersの定義はデフォルト値を設定できる
@@ -78,14 +78,14 @@ TODO: やり方がまだよくわかっていない、要調査
     - argumentsで定義すれば上書きされる
         - デフォルト値もargumentsも設定されてなければ**ワークフロー登録時にエラー**(inputs.parameters.xxxx was not supplied)
 
-### sample8
+## sample8
 ![](img/sample8-1.png)
 ![](img/sample8-2.png)
 
 - 同じような処理をargumentsだけ変えて繰り返し実行した場合に**withItems**でまとめられる
 - あくまで同じ階層で複数回実行されるので並列で処理されるということに注意する
 
-### sample9
+## sample9
 ![](img/sample9.png)
 
 - 処理が成功(or 失敗)した場合にワークフローを自動で削除したい場合
@@ -99,14 +99,14 @@ TODO: やり方がまだよくわかっていない、要調査
         - secondsAfterSuccess: PhaseがSucceeded
         - secondsAfterFailure: PhaseがFailed
 
-### sample10
+## sample10
 ![](img/sample10.png)
 
 - ちょっとしたスクリプトを実行したい場合
 - containerの代わりにscriptを使うことができる
 - shだけじゃなくてpythonなども使える
 
-### sample11
+## sample11
 ![](img/sample11.png)
 
 - ワークフローの処理中にKubernetesのリソースを作成したい場合
@@ -114,7 +114,7 @@ TODO: やり方がまだよくわかっていない、要調査
 - serviceAccountNameがない場合はnamespace内のdefaultの権限で実行されることになるので、大抵は失敗する
   - serviceAccountNameは適切に設定するように
 
-### sample12
+## sample12
 ![](img/sample12.png)
 
 - 処理が失敗した際に自動でリトライしたい場合
@@ -125,7 +125,7 @@ TODO: やり方がまだよくわかっていない、要調査
   - exit_codeを[0, 1, 1]でランダムに出力して終了
     - 当たりが出るまでリトライを繰り返す
 
-### sample13
+## sample13
 ![](img/sample13.png)
 
 - retryStrategyの少し高度な設定
@@ -141,21 +141,21 @@ TODO: やり方がまだよくわかっていない、要調査
   - sample13_optional に factor=1.5 を用意
     - 3回目までリトライする
 
-### sample14
+## sample14
 ![](img/sample14.png)
 
 - 処理が失敗したらリトライせずにフローを進めてほしい場合
   - 失敗を無視したいstepに対して**continueOn**を設定
   - 失敗したフローがあってもワークフロー全体としては成功扱いになる
 
-### sample15
+## sample15
 ![](img/sample15.png)
 
 - 直前の処理の結果によって処理を分岐させたい場合
   - 条件付き実行は **when** を使うことで実現可能
   - 特定の処理のステータスは **steps.<step名>.status**で取得可能
 
-### sample16
+## sample16
 ![](img/sample16.png)
 
 - 処理の結果(status)だけではなくて、出力結果による分岐も同じように書ける
@@ -163,7 +163,67 @@ TODO: やり方がまだよくわかっていない、要調査
   - resultを取得するには **RBAC的に pods/log** が必要
   - serviceAccountName を設定しないとエラーになることがあるので注意
 
-### sample
-![](img/sample.png)
+## sample17
 
-- 
+- 各処理ではなくワークフロー全体として成功したか失敗したかをハンドリングして特定の処理をしたい場合
+  - **onExit**を設定することで**exit-handler**を設定できる
+
+## [sample18](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=77)
+
+- ワークフローが失敗した時のみonExitで処理したい場合
+  - stepsとwhenを使うことで実現可能
+    - stepsの内部でないとwhenは使えないことに注意
+- sample18は成功の場合のみ掲載
+
+## [sample19](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=78)
+
+- 処理の途中で一旦止めて確認が済んだら続きを実行したい場合
+  - stepsの中に**suspend**を入れることによって実現
+    - `suspend:{}` とすることで無限sleep状態に
+      - 処理を再開するには
+        - UI: RESUME をクリック
+        - コマンドライン: `argo resume < workflow-name >`
+
+## [sample20](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=80)
+
+- 処理の途中で一定時間だけ間隔を空けたい場合
+  - sample19の有限時間バージョン
+  - **suspend**で***duration**を設定する
+  - durationの時間が過ぎる前にRESUMEで進めることも可能
+
+## [sample21](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=81)
+
+- GithubやS3からアプリケーションのソースを入手して処理させたい場合
+  - inputs.artifactsを使うことで簡単にコンテナ内部にソースを持ってくることができる
+  - **git**の他にも**s3**,**http**がある
+    - httpはGithubのリリースからバイナリを落として配置する場合に便利
+
+## [sample22](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=83)
+
+- sample21 について http を使った例
+
+## [sample23](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=85)
+
+- バックグラウンドでずっとアプリケーションを起動させておいて、各処理からアクセスさせたい場合
+  - **daemon**をtrueにすることによってワークフローが処理されている間ずっと動かし続けることができる
+- sampleはNginxの例
+  - 他にはデータベースを起動させておいて各種テストを走らせるなどの用途にも
+
+## [sample24](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=87)
+
+- hoge
+
+---
+<details>
+<summary>sample24, 25は生成したファイルを次の処理に渡したい場合の対処方法</summary>
+
+---
+方法は色々ある、ここでは3種類紹介
+1. resultで渡していく方法
+     - sample16 と同様のやり方なので省略
+     - ただしバイナリの時に使うことができない
+2. ボリュームを作成して各処理で mount して使い回す(sample24)
+3. artifact を使う(sample25)
+</details>
+
+---

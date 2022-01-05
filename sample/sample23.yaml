@@ -1,0 +1,33 @@
+# nginx-client の書き方がわからないので動かないです
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample23
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 60
+    secondsAfterSuccess: 60
+    secondsAfterFailure: 60
+  entrypoint: main
+  templates: 
+  - name: main
+    steps:
+      - - name: nginx-server
+          template: nginx-server
+      - - name: nginx-client
+          template: nginx-client
+          arguments:
+            parameters:
+              - name: server-jp
+                value: "{{steps.nginx-server.ip}}"
+  - name: nginx-server
+    daemon: true
+    container:
+      image: nginx:1.21
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 80
+        initialDelaySeconds: 2
+        timeoutSeconds: 1

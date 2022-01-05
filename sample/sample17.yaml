@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample17
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 60
+    secondsAfterSuccess: 60
+    secondsAfterFailure: 60
+  entrypoint: main
+  onExit: echo-bye
+  templates: 
+  - name: main
+    steps:
+      - - name: step1
+          template: whalesay
+  - name: whalesay
+    container:
+      image: docker/whalesay:latest
+      command: [cowsay]
+      args: ["step1"]
+  - name: echo-bye
+    script:
+      image: alpine:latest
+      command: [sh]
+      source: |
+        echo "bye"

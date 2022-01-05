@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample20
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 60
+    secondsAfterSuccess: 60
+    secondsAfterFailure: 60
+  entrypoint: main
+  templates: 
+  - name: main
+    steps:
+      - - name: hello
+          template: whalesay
+      - - name: 20seconds-sleep
+          template: 20seconds-sleep
+      - - name: after-approve
+          template: whalesay
+  - name: 20seconds-sleep
+    suspend:
+      duration: 20s
+  - name: whalesay
+    container:
+      image: docker/whalesay:latest
+      command: [cowsay]
+      args: ["hogehoge"]
