@@ -1,0 +1,43 @@
+# nginx-client の書き方がわからないので動かないです
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample24
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 60
+    secondsAfterSuccess: 60
+    secondsAfterFailure: 60
+  volumeClaimTemplates:
+    - metadata:
+        name: workdir
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+  entrypoint: main
+  templates: 
+  - name: main
+    steps:
+      - - name: generate
+          template: whalesay
+      - - name: print
+          template: print-message
+  - name: whalesay
+    container:
+      image: docker/whalesay:latest
+      command: [sh, -c]
+      args: ["cowsay hello | tee /mnt/vol/hello_world.txt"]
+      volumeMounts:
+      - name: workdir
+        mountPath: /mnt/vol
+  - name: print-message
+    container:
+      image: alpine:latest
+      command: [sh, -c]
+      args: ["cat /mnt/vol/hello_world.txt"]
+      volumeMounts:
+      - name: workdir
+        mountPath: /mnt/vol

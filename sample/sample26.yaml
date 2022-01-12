@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  Name: sample26
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 60
+    secondsAfterSuccess: 60
+    secondsAfterFailure: 60
+  arguments:
+    parameters:
+    - name: message
+      value: "hello world"
+  entrypoint: main
+  templates: 
+  - name: main
+    steps:
+      - - name: whalesay
+          template: whalesay
+  - name: whalesay
+    container:
+      image: docker/whalesay:latest
+      command: [cowsay]
+      args: ["{{workflow.parameters.message}}"]

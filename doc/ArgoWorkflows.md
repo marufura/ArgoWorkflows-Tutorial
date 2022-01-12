@@ -9,7 +9,7 @@ TODO: やり方がまだよくわかっていない、要調査
 - [Workflow RBAC](https://argoproj.github.io/argo-workflows/workflow-rbac/)
 - [qiita](https://qiita.com/knqyf263/items/ecc799650fe247dce9c5)
 
-## Workflowの書き方
+# Workflowの書き方
 [CloudNative Days Tokyo 2021: Argo Workflows](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=41)
 
 ## sample1
@@ -211,7 +211,9 @@ TODO: やり方がまだよくわかっていない、要調査
 
 ## [sample24](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=87)
 
-- hoge
+- 生成したファイルを次の処理に渡す
+  - ボリュームを作成して各処理でmountして使い回す方法
+  - **volumeClaimTemplates**を利用する
 
 ---
 <details>
@@ -227,3 +229,74 @@ TODO: やり方がまだよくわかっていない、要調査
 </details>
 
 ---
+
+## [sample25](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=89)
+
+- 生成したファイルを次の処理に渡す
+  - **artifact**を使う
+    - s3互換のオブジェクトストレージを使うことができる
+    - 例ではクラスター内のminioを使ってみる
+
+## [sample26](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=94)
+
+- ワークフロー全体で使える変数を定義したい
+  - ベタ書きで定義する(オーバーライド可能)
+    - argo submit の際に `--parameter message=hoge` とすることで上書きされる
+
+---
+<details>
+<summary>sample26, 27, 28はワークフロー全体で使える変数を定義したい場合の対処方法</summary>
+
+---
+方法は色々ある、ここでは3種類紹介
+1. ベタ書きで定義する(オーバーライド可能)
+2. configMap から参照して定義する
+3. ワークフローのラベルから定義する
+</details>
+
+---
+
+## [sample27](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=95)
+
+<!-- TODO -->
+- ワークフロー全体で使える変数を定義したい
+  - configMap から参照して定義する
+
+## [sample28](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=97)
+
+- ワークフロー全体で使える変数を定義したい
+  - ワークフローのラベルから定義する
+    - argo submit の際に `--labels message-from-labels=foo` として上書き可能
+
+## [sample29](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=99)
+
+- ワークフローの同時実行数を制御して同時に動かないようにしたい
+  - ワークフローが同時に実行されてしまうと不都合な場合
+  - 同時実行数を制御しておくとより安全に運用可能
+  - 制御するには **synchronization** を使う
+    - **semaphore** による制御(sample29)
+    - **mutex** により制御(sample30)
+
+## [sample30](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=102)
+
+- ワークフローの同時実行数を制御して同時に動かないようにしたい
+  - ワークフローが同時に実行されてしまうと不都合な場合
+  - 同時実行数を制御しておくとより安全に運用可能
+  - 制御するには **synchronization** を使う
+    - **semaphore** による制御(sample29)
+    - **mutex** により制御(sample30)
+
+## [sample31](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=104)
+
+- 渡されたパラメーターを加工したい、json から特定の key の value を取り出したい場合
+- 組み込みの関数や sprig を使って加工・抽出が可能
+  - 組み込みの関数を使う場合は `{{` の部分を `{{=` にする必要がある
+    - 全ての箇所で対応しているわけではない
+
+# [ワークフローのテンプレートの管理](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=110)
+
+# [ワークフローの定期実行](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=121)
+
+# [イベントを検知してワークフローを実行させる](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=124)
+
+# [Tips](https://speakerdeck.com/makocchi/how-to-use-argo-workflows?slide=133)
