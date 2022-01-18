@@ -23,6 +23,7 @@ spec:
     steps:
       - - name: webhook
           when: "{{workflow.status}} == Succeeded"
+          # FAIL: use '!= ' instead of '=='.
           template: echo-bye
   - name: echo-bye
     script:
